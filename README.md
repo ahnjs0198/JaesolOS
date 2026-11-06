@@ -10,7 +10,7 @@ JaesolOS is a hobby operating-system experiment. The repository contains a parti
 | ELF layout | [linker.ld](linker.ld) declares `_start`, places the image at 1 MiB, and orders the Multiboot section first. |
 | VGA banner | [kernel.c](kernel.c) calls a VGA text API to print a fixed banner and status messages. The driver and its header are absent from the tracked source. The messages are strings embedded in the kernel. |
 | Build and GRUB | The [Makefile](Makefile) describes a 32-bit ELF build and calls `grub-mkrescue`. Several paths it expects are absent, including the VGA implementation, its header, and the GRUB configuration. The checkout cannot reproduce the ISO as written. |
-| Historical artifact | A previously built ISO is tracked. Its provenance and runtime behavior have not been independently verified. |
+| Historical artifact | The tracked ISO contains a GRUB menu that invokes `multiboot /boot/jaesol.bin` and includes that kernel file. The ISO has not been boot-tested in this review. |
 
 The demo code has no interactive shell or keyboard input.
 
