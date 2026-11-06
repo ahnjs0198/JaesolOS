@@ -1,83 +1,23 @@
 # JaesolOS
 
-A hobby x86 operating system built from scratch for learning purposes.
+JaesolOS is a hobby operating-system experiment. The repository contains a partial 32-bit x86 boot demo and a proposal for a future RISC-V/FPGA system.
 
-## Current Status
+## x86 boot demo
 
-**Phase 1 — Bootloader & VGA Driver** ✅
-- Multiboot-compliant kernel (GRUB compatible)
-- 32-bit Protected Mode entry via assembly
-- VGA text mode driver (80×25, 16 colors)
-- Kernel boots and prints system info to screen
+| Area | Evidence in the repository |
+| --- | --- |
+| Multiboot and entry point | [boot.asm](boot.asm) defines a Multiboot v1 header, sets up a 16 KiB stack, calls `kernel_main`, and halts when it returns. |
+| ELF layout | [linker.ld](linker.ld) declares `_start`, places the image at 1 MiB, and orders the Multiboot section first. |
+| VGA banner | [kernel.c](kernel.c) calls a VGA text API to print a fixed banner and status messages. The driver and its header are absent from the tracked source. The messages are strings embedded in the kernel. |
+| Build and GRUB | The [Makefile](Makefile) describes a 32-bit ELF build and calls `grub-mkrescue`. Several paths it expects are absent, including the VGA implementation, its header, and the GRUB configuration. The checkout cannot reproduce the ISO as written. |
+| Historical artifact | The tracked ISO contains a GRUB menu that invokes `multiboot /boot/jaesol.bin` and includes that kernel file. The ISO has not been boot-tested in this review. |
 
-## Project Structure
+The demo code has no interactive shell or keyboard input.
 
-```
-JaesolOS/
-├── boot/
-│   ├── boot.asm      # Assembly entry point + Multiboot header
-│   └── linker.ld     # Linker script (kernel loads at 1MB)
-├── kernel/
-│   ├── kernel.c      # kernel_main() — C entry point
-│   └── vga.c         # VGA text mode driver
-├── include/
-│   └── vga.h         # VGA driver interface
-├── iso/
-│   └── boot/
-│       └── grub/
-│           └── grub.cfg  # GRUB boot menu config
-└── Makefile
-```
+## Planned RISC-V and FPGA work
 
-## How It Works
+The proposed path starts with an RV32 boot banner under QEMU, then adds networking and a small HTTP application. Running the application on an FPGA soft core and serving a request through a reverse proxy are later milestones. See the [project plan](docs/PROJECT_PLAN.md).
 
-```
-Power ON
-  └─> BIOS/UEFI    hardware init
-        └─> GRUB   finds Multiboot header, loads kernel ELF at 0x100000
-              └─> boot.asm  sets up 16KB stack, calls kernel_main()
-                    └─> kernel.c  VGA driver init, prints boot log
-```
+## License
 
-## Build & Run
-
-### Requirements
-
-```bash
-# Ubuntu / Debian
-sudo apt install build-essential nasm qemu-system-x86 \
-                 grub-pc-bin grub-common xorriso mtools
-
-# macOS
-brew install nasm qemu xorriso
-# (grub requires additional setup on macOS — use a Linux VM or Docker)
-```
-
-### Build
-
-```bash
-make        # builds JaesolOS.iso
-make clean  # removes build artifacts
-```
-
-### Run
-
-```bash
-qemu-system-i386 -cdrom JaesolOS.iso
-```
-
-Or burn the ISO to a USB drive and boot on real hardware.
-
-## Roadmap
-
-- [x] Phase 1 — Bootloader, Protected Mode, VGA driver
-- [ ] Phase 2 — GDT, IDT, interrupt handling, keyboard input
-- [ ] Phase 3 — Physical memory manager, paging
-- [ ] Phase 4 — Process scheduler
-- [ ] Phase 5 — Virtual filesystem, syscalls, user mode shell
-
-## References
-
-- [OSDev Wiki](https://wiki.osdev.org)
-- [Multiboot Specification](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html)
-- [Writing a Simple OS from Scratch — Nick Blundell](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
+The repository does not currently include a license file.
