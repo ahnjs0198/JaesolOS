@@ -17,7 +17,7 @@ VGA text screen, then halts.
 
 | Part | What it does |
 | --- | --- |
-| [`boot/boot.asm`](boot/boot.asm) | Multiboot v1 header (magic `0x1BADB002`), a 16 KiB stack, a call to `kernel_main`, and a `cli`/`hlt` loop if it returns. |
+| [`boot/boot.asm`](boot/boot.asm) | Multiboot v1 header (magic `0x1BADB002`; flags ask GRUB to page-align modules and to pass memory information), a 16 KiB stack, a call to `kernel_main`, and a `cli`/`hlt` loop if it returns. |
 | [`boot/linker.ld`](boot/linker.ld) | ELF layout with entry `_start`, loaded at 1 MiB, Multiboot header first. |
 | [`kernel/vga.c`](kernel/vga.c), [`include/vga.h`](include/vga.h) | VGA text-mode driver: writes to `0xB8000` (80×25), 16 colours, newline, carriage return, tab, and scrolling. |
 | [`kernel/kernel.c`](kernel/kernel.c) | `kernel_main`: prints the JaesolOS banner, the boot log and the system summary. |
@@ -52,17 +52,20 @@ Ubuntu 24.04.4, gcc 13.3.0, GNU ld 2.42, NASM 2.16.01, GRUB 2.12 (`grub-pc-bin`)
   and `grub-file --is-x86-multiboot` accepts it.
 - The ISO booted in `qemu-system-i386` (no network device) and showed the same screen as the screenshot,
   ending with `CPU halted. (boot.asm .halt loop)`.
-- The kernel inside the committed `JaesolOS.iso` is byte-identical to the one built from source.
+- The kernel inside the previously committed `JaesolOS.iso` was byte-identical to the one built from
+  source, so the ISO was removed from the repository; build it with `make`.
 
 ## Repository layout
 
-| Path | Notes |
+| Path | Contents |
 | --- | --- |
-| `boot/`, `kernel/`, `include/`, `iso/` | Sources and GRUB config used by the [`Makefile`](Makefile). |
-| `boot.asm`, `linker.ld`, `kernel.c` (top level) | Identical copies of `boot/boot.asm`, `boot/linker.ld` and `kernel/kernel.c`; the build does not use them. |
-| `JaesolOS.iso` | A built ISO committed earlier; `.gitignore` now excludes `*.iso`, so new builds are not tracked. |
-| `images/` | QEMU screenshot. |
-| [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md) | RISC-V / FPGA plan. |
+| [`boot/`](boot) | `boot.asm` (Multiboot header and entry), `linker.ld` (ELF layout) |
+| [`kernel/`](kernel), [`include/`](include) | `kernel.c`, the VGA driver `vga.c` and its header `vga.h` |
+| [`iso/boot/grub/`](iso/boot/grub) | `grub.cfg`; `make` adds `iso/boot/jaesol.bin` and builds `JaesolOS.iso` |
+| [`images/`](images) | QEMU screenshot |
+| [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md) | RISC-V / FPGA plan |
+
+Build outputs (`*.o`, `*.bin`, `*.iso`) are not tracked (see [`.gitignore`](.gitignore)).
 
 ## Planned RISC-V and FPGA work
 

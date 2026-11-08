@@ -15,7 +15,9 @@
 ; 세 값의 합이 반드시 0이 되어야 유효한 Multiboot 헤더로 인정.
 
 MBOOT_MAGIC    equ 0x1BADB002   ; 고정된 매직 넘버 (GRUB 스펙에 정의됨)
-MBOOT_FLAGS    equ 0x00000003   ; 비트0=4KB 정렬, 비트1=메모리 맵 제공
+MBOOT_FLAGS    equ 0x00000003   ; 비트0=모듈을 4KB 경계에 정렬해 달라고 요청
+                                ; 비트1=부트로더에 메모리 정보(mem_lower/mem_upper 등)를
+                                ;       Multiboot 정보 구조체로 넘겨 달라고 요청
 MBOOT_CHECKSUM equ -(MBOOT_MAGIC + MBOOT_FLAGS)  ; 합이 0이 되게 하는 값
 
 ; .multiboot 섹션: 링커 스크립트에서 파일 맨 앞에 배치하도록 지시

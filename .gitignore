@@ -8,3 +8,6 @@
 .idea/
 *.swp
 *~
+
+# macOS Finder 메타데이터
+.DS_Store
